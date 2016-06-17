@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+<p>CONTROLS:<br><br>
+1.USE THE W&S KEYS TO MOVE THE RIGHT PADDLE UP AND DOWN.<br><br>
+2.USE THE UP AND DOWN ARROWS TO MOVE THE LEFT PADDLE UP AND DOWN.
+</p>
+<canvas id="myCanvas">
+<script>
+ var WIDTH=700;
+ var HEIGHT=600;
+ var UpArrow=38;
+ var DownArrow=40;
+ var W=87;
+ var S=83;
+ var pi=Math.PI;
+ var canvas,ctx,keystate;
+ var player,ai,ball;
+ player={
+ x:1,
+ y:1,
+ width:20,
+ height:100,
+ 
+  
+   update:function() {
+     
+	 if(keystate[UpArrow]) 
+	    this.y-=7;
+		
+		
+	 if(keystate[DownArrow])
+         this.y+=7;	 
+          
+	  
+	  
+	},
+   draw:function() {
+       ctx.fillRect(this.x,this.y,this.width,this.height);
+   }
+  };
+  //alert(player.width);
+ ai={
+ x:1,
+ y:1,
+ width:20,
+ height:100,
+  
+   update:function() {
+    
+   if(keystate[W]) 
+	    this.y-=7;
+		
+		
+	 if(keystate[S])
+         this.y+=7;
+		 
+		 
+		 
+		 },
+   draw:function() {
+        ctx.fillRect(this.x,this.y,this.width,this.height);
+   
+   }
+  };
+   //alert(ai.height);
+  ball={
+ x:1,
+ y:1,
+ vel:0,
+ side:20,
+ speed:5,
+ //accln:1,
+  
+   update:function() {
+   this.x+=this.vel.x;
+   this.y+=this.vel.y;
+   
+     if(this.y<0 || this.y+this.side>HEIGHT)
+	    this.vel.y*=-1;
+		var Isect=function(ax,ay,aw,ah,bx,by,bw,bh){
+		 return ax<bx+bw && ay<by+bh && bx<ax+aw && by<ay+ah;
+		 };
+		 var pdl=this.vel.x<0? player:ai;
+		 if(Isect(pdl.x,pdl.y,pdl.width,pdl.height,this.x,this.y,this.side,this.side)){
+		 var n=(this.y+this.side-pdl.y)/(pdl.height+this.side);
+		 var phi=0.25*pi*(2*n-1);
+		 this.vel.x=(pdl==player ?1:-1)*this.speed*Math.cos(phi);
+		 //this.vel.x*=-1;
+		 
+		 //this.vel.y=Math.random() < 0.5 ?this.speed: -this.speed;
+		 this.vel.y=this.speed*Math.sin(phi);
+		 pdl.y+=Math.random() < 0.5 ? -125 : 125;
+		 }
+   },
+   draw:function() {
+        ctx.fillRect(this.x,this.y,this.side,this.side);
+   }
+   
+  };
+  //alert(ball.side);
+  //main();
+  //myCanvas.width=WIDTH;
+  //myCanvas.height=HEIGHT;
+  //ctx=myCanvas.getContext("2d");
+  
+ function main(){
+ //alert("h");
+ myCanvas.width=WIDTH;
+  myCanvas.height=HEIGHT;
+  ctx=myCanvas.getContext("2d");
+  keystate={};
+  document.addEventListener("keydown",function(evt){
+       keystate[evt.keyCode]=true;
+	   });
+  document.addEventListener("keyup",function(evt){
+        delete keystate[evt.keyCode];
+       });		
+	   
+  //canvas=document.createElement("canvas");
+  //canvas.width=WIDTH;
+  //canvas.height=HEIGHT;
+  //ctx=canvas.getContext("2d");
+  //alert("i");
+  //alert(myCanvas.width);
+  init();
+  //update();
+  //draw();
+  
+  //docuent.body.appendChild(canvas);
+  //init();
+  var loop=function(){
+  //init();
+  update();
+  draw();
+  //alert("hello");
+  //init();
+  
+  
+  window.requestAnimationFrame(loop,myCanvas);
+  };
+  window.requestAnimationFrame(loop,myCanvas);
+  }
+  function init() {
+  //alert("init");
+  //alert("hello");
+  
+  player.x=player.width;
+  player.y=(HEIGHT-player.height)/2;
+  //alert(player.y);
+  
+  ai.x=WIDTH-(player.width+ai.width);
+  ai.y=(HEIGHT-ai.height)/2;
+  //alert(ai.y);
+  
+  ball.x=(WIDTH-ball.side)/2;
+  ball.y=(HEIGHT-ball.side)/2;
+  ball.vel={
+  x:ball.speed,
+  y:0
+  }
+  //alert(ball.y);
+  }
+  
+  function update() {
+  //alert("game");
+  ball.update();
+  //alert("gamer");
+  player.update();
+  ai.update();
+  }
+  
+  function draw() {
+  //alert("gamer");
+  ctx.fillRect(0,0,WIDTH,HEIGHT);
+  ctx.save();
+  ctx.fillStyle="#fff";
+  ball.draw();
+  player.draw();
+  ai.draw();
+  var w=4;
+  var x=(WIDTH-w)*0.5;
+  var y=0;
+  var step=HEIGHT/20;
+  while(y<HEIGHT){
+  ctx.fillRect(x,y+step*0.25,w,step*0.5);
+  y+=step;
+  }
+  ctx.restore();
+  }
+  
+  main();
+  //alert("h");
+  </script>
+  <p>CONTROLS</p>
+   
+  </body>
+  </html>
